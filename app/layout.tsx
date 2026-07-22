@@ -1,10 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
-
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+import { PwaRegister } from "@/components/providers/PwaRegister";
 
 export const metadata: Metadata = {
   title: "Atmos Premium Weather",
@@ -25,9 +22,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className="h-full antialiased">
       <body className="min-h-full bg-slate-950 text-white">
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          <PwaRegister />
+          {children}
+        </AppProviders>
       </body>
     </html>
   );

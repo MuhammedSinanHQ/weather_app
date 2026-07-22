@@ -1,4 +1,4 @@
-export const pageTransition = { duration: 0.7, ease: [0.22, 1, 0.36, 1] };
+export const pageTransition = { duration: 0.7, ease: "easeOut" as const };
 export const cardHoverTransition = { duration: 0.3, ease: "easeOut" };
 export const staggerDelay = 0.1;
 export const springPreset = {

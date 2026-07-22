@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import gsap from "gsap";
+import Lottie from "lottie-react";
 import {
   Cloud,
   Droplets,
@@ -13,7 +14,6 @@ import {
   Search,
   Settings,
   Sparkles,
-  Sun,
   Wind,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -22,6 +22,7 @@ import { useCitySuggestions, useWeatherQuery } from "@/hooks/useWeatherQuery";
 import { pageTransition, springPreset, staggerDelay } from "@/animations/motion";
 import { useWeatherStore } from "@/store/useWeatherStore";
 import { weatherThemeMap } from "@/utils/weatherTheme";
+import sunPulse from "@/animations/sunPulse.json";
 
 const detailIconMap = {
   humidity: Droplets,
@@ -61,6 +62,9 @@ export default function WeatherApp() {
 
   const [searchInput, setSearchInput] = useState(city);
   const [showSettings, setShowSettings] = useState(false);
+  const [clock, setClock] = useState(new Date());
+  const [online, setOnline] = useState(true);
+  const [justReconnected, setJustReconnected] = useState(false);
   const bgRef = useRef<HTMLDivElement | null>(null);
 
   const { data, isLoading, isError, error, isFetching } = useWeatherQuery(city, unit);
@@ -75,12 +79,35 @@ export default function WeatherApp() {
       repeat: -1,
     });
 
-    return () => animation.kill();
+    return () => {
+      animation.kill();
+    };
   }, [animationsEnabled]);
+
+  useEffect(() => {
+    const tick = window.setInterval(() => setClock(new Date()), 1000);
+    setOnline(navigator.onLine);
+
+    const goOnline = () => {
+      setOnline(true);
+      setJustReconnected(true);
+      window.setTimeout(() => setJustReconnected(false), 2500);
+    };
+    const goOffline = () => setOnline(false);
+
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+
+    return () => {
+      window.clearInterval(tick);
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
 
   const theme = useMemo(
     () => weatherThemeMap[data?.current.condition ?? "sunny"],
-    [data?.current.condition],
+    [data],
   );
 
   const chartData = useMemo(
@@ -115,6 +142,13 @@ export default function WeatherApp() {
     setSearchInput(value.trim());
   };
 
+  const greeting =
+    clock.getHours() < 12
+      ? "Good Morning"
+      : clock.getHours() < 18
+        ? "Good Afternoon"
+        : "Good Evening";
+
   return (
     <main className="relative min-h-screen overflow-hidden text-white">
       <div
@@ -130,6 +164,17 @@ export default function WeatherApp() {
       )}
 
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-8 md:px-8">
+        {!online && (
+          <div className="glass-card rounded-2xl border-rose-300/30 bg-rose-500/20 px-4 py-2 text-sm">
+            You are offline. Cached weather view is active.
+          </div>
+        )}
+        {justReconnected && (
+          <div className="glass-card rounded-2xl border-emerald-300/30 bg-emerald-500/20 px-4 py-2 text-sm">
+            Connection restored. Data is syncing now.
+          </div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -250,6 +295,8 @@ export default function WeatherApp() {
               <div className="flex flex-wrap items-start justify-between gap-6">
                 <div>
                   <p className="text-sm text-white/80">{formatLocalDateTime(new Date().toISOString(), data.timezone)}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/70">{greeting}</p>
+                  <p className="mt-1 text-sm text-white/70">{clock.toLocaleTimeString()}</p>
                   <h1 className="mt-2 text-2xl font-semibold tracking-tight md:text-4xl">{data.location}</h1>
                   <p className="mt-2 text-white/85 capitalize">{data.current.description}</p>
                   <p className="mt-4 text-sm text-white/70">Last updated {new Date(data.updatedAt).toLocaleTimeString()}</p>
@@ -260,7 +307,11 @@ export default function WeatherApp() {
                     transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
                     className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-white/15"
                   >
-                    {data.current.condition === "night" ? <Moon /> : <Sun />}
+                    {data.current.condition === "night" ? (
+                      <Moon />
+                    ) : (
+                      <Lottie animationData={sunPulse} loop className="h-12 w-12" />
+                    )}
                   </motion.div>
                   <motion.p
                     key={data.current.temperature}
