@@ -150,7 +150,7 @@ export default function WeatherApp() {
         : "Good Evening";
 
   return (
-    <main className="relative min-h-screen overflow-hidden text-white">
+    <main className="color-cycle relative min-h-screen overflow-hidden text-white">
       <div
         ref={bgRef}
         className={`absolute inset-0 -z-20 bg-[length:200%_200%] bg-gradient-to-br ${theme.gradient}`}
@@ -163,7 +163,7 @@ export default function WeatherApp() {
         </div>
       )}
 
-      <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-8 md:px-8">
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:py-8 md:px-8">
         {!online && (
           <div className="glass-card rounded-2xl border-rose-300/30 bg-rose-500/20 px-4 py-2 text-sm">
             You are offline. Cached weather view is active.
@@ -179,9 +179,9 @@ export default function WeatherApp() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={pageTransition}
-          className="glass-card flex flex-wrap items-center justify-between gap-4 rounded-[30px] p-4"
+          className="glass-card flex flex-col items-stretch gap-4 rounded-[30px] p-4 sm:flex-row sm:items-center sm:justify-between"
         >
-          <div className="relative min-w-[250px] flex-1">
+          <div className="relative w-full min-w-0 flex-1">
             <Search className="pointer-events-none absolute left-4 top-3.5 h-4 w-4 text-white/70" />
             <input
               aria-label="Search city"
@@ -213,7 +213,7 @@ export default function WeatherApp() {
             </AnimatePresence>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
             <button
               onClick={() => submitSearch(city)}
               className="button-liquid rounded-full px-4 py-2 text-sm"
@@ -268,11 +268,11 @@ export default function WeatherApp() {
         )}
 
         {isLoading ? (
-          <section className="glass-card flex h-[360px] items-center justify-center rounded-[30px] p-8 text-white/80">
+          <section className="glass-card flex h-[320px] items-center justify-center rounded-[30px] p-6 text-white/80 sm:h-[360px] sm:p-8">
             <LoaderCircle className="h-8 w-8 animate-spin" />
           </section>
         ) : isError || !data ? (
-          <section className="glass-card rounded-[30px] p-8 text-red-100">
+          <section className="glass-card rounded-[30px] p-6 text-red-100 sm:p-8">
             {(error as Error)?.message ?? "Unable to fetch weather data."}
           </section>
         ) : (
@@ -290,9 +290,9 @@ export default function WeatherApp() {
             <motion.section
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
               transition={springPreset}
-              className="glass-card rounded-[30px] p-6"
+              className="glass-card rounded-[30px] p-4 sm:p-6"
             >
-              <div className="flex flex-wrap items-start justify-between gap-6">
+              <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-sm text-white/80">{formatLocalDateTime(new Date().toISOString(), data.timezone)}</p>
                   <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/70">{greeting}</p>
@@ -301,7 +301,7 @@ export default function WeatherApp() {
                   <p className="mt-2 text-white/85 capitalize">{data.current.description}</p>
                   <p className="mt-4 text-sm text-white/70">Last updated {new Date(data.updatedAt).toLocaleTimeString()}</p>
                 </div>
-                <div className="text-right">
+                <div className="w-full text-left sm:w-auto sm:text-right">
                   <motion.div
                     animate={animationsEnabled ? { y: [0, -6, 0] } : undefined}
                     transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
@@ -317,7 +317,7 @@ export default function WeatherApp() {
                     key={data.current.temperature}
                     initial={{ opacity: 0.2, scale: 0.85 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-6xl font-bold leading-none"
+                    className="text-5xl font-bold leading-none sm:text-6xl"
                   >
                     {data.current.temperature}°
                   </motion.p>
@@ -328,7 +328,7 @@ export default function WeatherApp() {
             <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
               <motion.section
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                className="glass-card rounded-[30px] p-6"
+                className="glass-card rounded-[30px] p-4 sm:p-6"
               >
                 <header className="mb-4 flex items-center justify-between">
                   <h2 className="text-lg font-semibold">Weather Details</h2>
@@ -359,7 +359,7 @@ export default function WeatherApp() {
                 className="glass-card rounded-[30px] p-6"
               >
                 <h2 className="mb-4 text-lg font-semibold">Air Quality</h2>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   {Object.entries(data.airQuality).map(([key, value]) => (
                     <div key={key} className="rounded-2xl border border-white/20 bg-black/20 p-3 text-sm">
                       <p className="uppercase text-white/60">{key.replace("_", ".")}</p>
@@ -372,7 +372,7 @@ export default function WeatherApp() {
 
             <motion.section
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-              className="glass-card rounded-[30px] p-6"
+              className="glass-card rounded-[30px] p-4 sm:p-6"
             >
               <h2 className="mb-4 text-lg font-semibold">24-Hour Forecast</h2>
               <div className="hide-scrollbar flex gap-3 overflow-x-auto pb-1">
@@ -381,7 +381,7 @@ export default function WeatherApp() {
                     whileHover={{ y: -3 }}
                     transition={{ duration: 0.3 }}
                     key={entry.time}
-                    className="min-w-[130px] rounded-2xl border border-white/20 bg-white/8 p-3"
+                    className="min-w-[115px] rounded-2xl border border-white/20 bg-white/8 p-3 sm:min-w-[130px]"
                   >
                     <p className="text-sm text-white/80">
                       {new Date(entry.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -396,7 +396,7 @@ export default function WeatherApp() {
             <div className="grid gap-6 xl:grid-cols-2">
               <motion.section
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                className="glass-card rounded-[30px] p-6"
+                className="glass-card rounded-[30px] p-4 sm:p-6"
               >
                 <h2 className="mb-4 text-lg font-semibold">7-Day Forecast</h2>
                 <div className="space-y-3">
@@ -419,10 +419,10 @@ export default function WeatherApp() {
 
               <motion.section
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                className="glass-card rounded-[30px] p-6"
+                className="glass-card rounded-[30px] p-4 sm:p-6"
               >
                 <h2 className="mb-4 text-lg font-semibold">Weather Trends</h2>
-                <div className="h-60">
+                <div className="h-52 sm:h-60">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
                       <CartesianGrid stroke="rgba(255,255,255,0.1)" strokeDasharray="3 3" />
@@ -433,7 +433,7 @@ export default function WeatherApp() {
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="mt-5 h-40">
+                <div className="mt-5 h-36 sm:h-40">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData}>
                       <CartesianGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
@@ -451,11 +451,11 @@ export default function WeatherApp() {
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
               className="grid gap-6 xl:grid-cols-2"
             >
-              <article className="glass-card rounded-[30px] p-6">
+              <article className="glass-card rounded-[30px] p-4 sm:p-6">
                 <h2 className="mb-4 text-lg font-semibold">Interactive Weather Map</h2>
                 <div className="relative h-56 overflow-hidden rounded-2xl border border-white/20 bg-gradient-to-tr from-cyan-900/50 to-slate-900/60">
                   <div className="absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_20%_30%,rgba(34,211,238,0.25),transparent_35%),radial-gradient(circle_at_70%_60%,rgba(96,165,250,0.2),transparent_40%)]" />
-                  <div className="absolute bottom-3 left-3 flex gap-2 text-xs">
+                  <div className="absolute bottom-3 left-3 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-2 text-xs">
                     {['Temperature', 'Clouds', 'Rain', 'Wind', 'Satellite'].map((layer) => (
                       <span key={layer} className="rounded-full border border-white/20 bg-black/35 px-3 py-1">{layer}</span>
                     ))}
@@ -463,19 +463,19 @@ export default function WeatherApp() {
                 </div>
               </article>
 
-              <article className="glass-card rounded-[30px] p-6">
+              <article className="glass-card rounded-[30px] p-4 sm:p-6">
                 <h2 className="mb-4 text-lg font-semibold">Sunrise / Sunset</h2>
-                <div className="relative flex h-56 items-end justify-center rounded-2xl border border-white/20 bg-black/25 pb-8">
-                  <div className="absolute bottom-8 h-28 w-72 rounded-t-full border-t-2 border-dashed border-amber-300/70" />
+                <div className="relative flex h-48 items-end justify-center rounded-2xl border border-white/20 bg-black/25 pb-8 sm:h-56">
+                  <div className="absolute bottom-8 h-28 w-[min(18rem,85vw)] rounded-t-full border-t-2 border-dashed border-amber-300/70 sm:w-72" />
                   <motion.div
                     animate={animationsEnabled ? { x: [0, 36, 0], y: [0, -18, 0] } : undefined}
                     transition={{ duration: 9, ease: "easeInOut", repeat: Infinity }}
                     className="mb-24 h-8 w-8 rounded-full bg-amber-300 shadow-[0_0_35px_rgba(251,191,36,0.85)]"
                   />
-                  <div className="absolute bottom-2 left-6 text-xs text-white/75">
+                  <div className="absolute bottom-2 left-3 text-[11px] text-white/75 sm:left-6 sm:text-xs">
                     Sunrise {new Date(data.sunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
-                  <div className="absolute bottom-2 right-6 text-xs text-white/75">
+                  <div className="absolute bottom-2 right-3 text-[11px] text-white/75 sm:right-6 sm:text-xs">
                     Sunset {new Date(data.sunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
@@ -484,7 +484,7 @@ export default function WeatherApp() {
 
             <motion.section
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-              className="glass-card rounded-[30px] p-6"
+              className="glass-card rounded-[30px] p-4 sm:p-6"
             >
               <h2 className="mb-4 text-lg font-semibold">Weather Alerts</h2>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -504,14 +504,14 @@ export default function WeatherApp() {
               </div>
             </motion.section>
 
-            <footer className="glass-card flex flex-wrap items-center justify-between gap-4 rounded-[30px] p-4 text-sm text-white/85">
+            <footer className="glass-card flex flex-col items-start gap-4 rounded-[30px] p-4 text-sm text-white/85 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <Heart className={`h-4 w-4 ${favorites.includes(city) ? "fill-white" : ""}`} />
                 <button onClick={() => toggleFavorite(city)} className="underline-offset-2 hover:underline">
                   {favorites.includes(city) ? "Remove from favorites" : "Save to favorites"}
                 </button>
               </div>
-              <p>Recent: {recent.join(" • ")}</p>
+              <p className="max-w-full truncate sm:max-w-none">Recent: {recent.join(" • ")}</p>
             </footer>
           </motion.div>
         )}
